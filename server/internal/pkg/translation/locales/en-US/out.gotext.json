@@ -1,0 +1,22 @@
+{
+    "language": "en-US",
+    "messages": [
+        {
+            "id": "Hello from Pitih",
+            "message": "Hello from Pitih",
+            "translation": "Hello from Pitih",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Args",
+                    "string": "%[1]v",
+                    "type": "[]any",
+                    "underlyingType": "[]any",
+                    "argNum": 1,
+                    "expr": "args"
+                }
+            ],
+            "fuzzy": true
+        }
+    ]
+}
