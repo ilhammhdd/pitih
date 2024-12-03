@@ -1,0 +1,48 @@
+%% v1.0.0
+graph
+    operator-runs-server --> system-verified-no-superadmin-account
+    system-verified-no-superadmin-account --> operator-input-superadmin-credentials
+    operator-input-superadmin-credentials --> system-create-superadmin-account
+
+    superadmin-create-user-code --> system-store-user-code
+    superadmin-delete-user-code --> system-remove-user-code
+
+    user-input-user-code --> system-verify-user-code-is-valid
+
+    system-verify-user-code-is-valid --> user-set-real-account-current-balance
+    user-set-real-account-current-balance --> user-add-real-account
+    user-add-real-account --> user-choose-1-or-more-real-account
+    user-choose-1-or-more-real-account --> user-create-logical-account
+
+    system-verify-user-code-is-valid --> user-choose-logical-account
+
+    user-choose-logical-account --> user-add-transaction-to-logical-account
+    user-add-transaction-to-logical-account --> system-update-logical-balance-in-the-same-row
+    user-add-transaction-to-logical-account --> system-update-real-balance
+
+    user-choose-logical-account --> user-move-amount-to-other-logical-account
+    user-move-amount-to-other-logical-account --> system-store-debit-row-to-source
+    user-move-amount-to-other-logical-account --> system-store-credit-row-to-destination
+    user-move-amount-to-other-logical-account --> if-logical-account-is-backed-by-different-real-account
+    if-logical-account-is-backed-by-different-real-account --> system-update-real-balance
+
+    system-verify-user-code-is-valid --> user-begin-real-account-balance-correction
+    user-begin-real-account-balance-correction --> system-prevents-users-to-add-transaction-to-related-logical-accounts
+    system-prevents-users-to-add-transaction-to-related-logical-accounts --> system-set-balance-correction-timeout
+    system-set-balance-correction-timeout --> system-must-balance-the-amount-difference-between-related-logical-account
+    system-set-balance-correction-timeout --> user-didn't-finish-balance-correction-before-timeout
+    user-didn't-finish-balance-correction-before-timeout --> system-cancel-balance-correction
+    system-must-balance-the-amount-difference-between-related-logical-account --> user-choose-even-balancing
+    user-choose-even-balancing --> system-distribute-the-amount-difference-between-related-logical-accounts
+    system-must-balance-the-amount-difference-between-related-logical-account --> user-choose-custom-percentage-balancing
+    user-choose-custom-percentage-balancing --> system-distribute-the-amount-difference-between-related-logical-accounts
+    system-must-balance-the-amount-difference-between-related-logical-account --> user-choose-custom-fix-amount-balancing
+    user-choose-custom-fix-amount-balancing --> system-distribute-the-amount-difference-between-related-logical-accounts
+    system-distribute-the-amount-difference-between-related-logical-accounts --> system-store-debit-or-credit-row-to-all-related-logical-account
+    system-store-debit-or-credit-row-to-all-related-logical-account --> system-allows-users-to-add-transaction-to-related-logical-accounts
+    system-cancel-balance-correction --> system-allows-users-to-add-transaction-to-related-logical-accounts
+
+    system-verify-user-code-is-valid --> user-set-auto-debet-from-one-logical-account-to-another
+    user-set-auto-debet-from-one-logical-account-to-another --> system-determine-it's-time-for-auto-debet
+    system-determine-it's-time-for-auto-debet --> system-store-debit-row-to-source
+    system-determine-it's-time-for-auto-debet --> system-store-credit-row-to-destination
