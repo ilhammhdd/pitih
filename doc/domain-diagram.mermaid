@@ -1,48 +1,105 @@
-%% v1.0.0
+%% v2.0.0
 graph
-    operator-runs-server --> system-verified-no-superadmin-account
-    system-verified-no-superadmin-account --> operator-input-superadmin-credentials
-    operator-input-superadmin-credentials --> system-create-superadmin-account
+    operator-runs-server --> system-verified-super-user-IS-NOT-exists
+    system-verified-super-user-IS-NOT-exists --> operator-input-argon2i-hashed-super-user-password
+    operator-input-argon2i-hashed-super-user-password --> system-create-super-user
 
-    superadmin-create-user-code --> system-store-user-code
-    superadmin-delete-user-code --> system-remove-user-code
+    operator-runs-server --> system-verified-super-user-IS-exists
+    system-verified-super-user-IS-exists --> system-check-deleted-account-cleanup-time
+    system-check-deleted-account-cleanup-time --> system-permenently-delete-account-scheduled-to-cleanup-at-current-time
+
+    system-create-super-user --> system-check-deleted-account-cleanup-time
+
+    operator-runs-server --> system-set-scheduler-to-cleanup-deleted-account-everyday
+
+    super-user-input-password --> system-verify-super-user-credential-is-valid
+    system-verify-super-user-credential-is-valid --> super-user-view-all-user
+    system-verify-super-user-credential-is-valid --> super-user-create-user-code
+    system-verify-super-user-credential-is-valid --> super-user-delete-user-code
+    super-user-create-user-code --> system-store-user-code
+    super-user-delete-user-code --> system-remove-user-code
 
     user-input-user-code --> system-verify-user-code-is-valid
 
-    system-verify-user-code-is-valid --> user-set-real-account-current-balance
-    user-set-real-account-current-balance --> user-add-real-account
-    user-add-real-account --> user-choose-1-or-more-real-account
-    user-choose-1-or-more-real-account --> user-create-logical-account
+    system-verify-user-code-is-valid --> user-view-all-real-account
+    system-verify-user-code-is-valid --> user-view-all-logical-account
 
-    system-verify-user-code-is-valid --> user-choose-logical-account
+    system-verify-user-code-is-valid --> user-create-real-account-with-init-balance
+    user-create-real-account-with-init-balance --> system-create-real-account
+    system-create-real-account --> system-add-credit-entry-with-current-balance-to-real-account
 
-    user-choose-logical-account --> user-add-transaction-to-logical-account
-    user-add-transaction-to-logical-account --> system-update-logical-balance-in-the-same-row
-    user-add-transaction-to-logical-account --> system-update-real-balance
+    system-verify-user-code-is-valid --> user-choose-one-real-account
+    user-choose-one-real-account --> user-delete-real-account
+    user-delete-real-account --> system-sees-all-relation-account-current-balance-IS-zero
+    user-delete-real-account --> system-sees-all-relation-account-current-balance-IS-NOT-zero
+    system-sees-all-relation-account-current-balance-IS-NOT-zero --> system-reject-real-account-deletion
+    system-sees-all-relation-account-current-balance-IS-zero --> user-type-real-account-name
+    user-type-real-account-name --> user-confirm-deletion
+    user-confirm-deletion --> user-reconfirm-deletion
+    user-reconfirm-deletion --> system-soft-delete-real-account
+    user-reconfirm-deletion --> system-soft-delete-relation-account
+    system-soft-delete-real-account --> system-set-cleanup-time-one-month-after-deletion
 
-    user-choose-logical-account --> user-move-amount-to-other-logical-account
-    user-move-amount-to-other-logical-account --> system-store-debit-row-to-source
-    user-move-amount-to-other-logical-account --> system-store-credit-row-to-destination
-    user-move-amount-to-other-logical-account --> if-logical-account-is-backed-by-different-real-account
-    if-logical-account-is-backed-by-different-real-account --> system-update-real-balance
+    system-verify-user-code-is-valid --> user-create-logical-account-with-init-balance
+    user-create-logical-account-with-init-balance --> system-create-logical-account
+    system-create-logical-account --> user-input-init-balance-more-than-zero
+    user-input-init-balance-more-than-zero --> system-show-all-real-account-for-backing-the-entry
 
-    system-verify-user-code-is-valid --> user-begin-real-account-balance-correction
-    user-begin-real-account-balance-correction --> system-prevents-users-to-add-transaction-to-related-logical-accounts
-    system-prevents-users-to-add-transaction-to-related-logical-accounts --> system-set-balance-correction-timeout
-    system-set-balance-correction-timeout --> system-must-balance-the-amount-difference-between-related-logical-account
-    system-set-balance-correction-timeout --> user-didn't-finish-balance-correction-before-timeout
-    user-didn't-finish-balance-correction-before-timeout --> system-cancel-balance-correction
-    system-must-balance-the-amount-difference-between-related-logical-account --> user-choose-even-balancing
-    user-choose-even-balancing --> system-distribute-the-amount-difference-between-related-logical-accounts
-    system-must-balance-the-amount-difference-between-related-logical-account --> user-choose-custom-percentage-balancing
-    user-choose-custom-percentage-balancing --> system-distribute-the-amount-difference-between-related-logical-accounts
-    system-must-balance-the-amount-difference-between-related-logical-account --> user-choose-custom-fix-amount-balancing
-    user-choose-custom-fix-amount-balancing --> system-distribute-the-amount-difference-between-related-logical-accounts
-    system-distribute-the-amount-difference-between-related-logical-accounts --> system-store-debit-or-credit-row-to-all-related-logical-account
-    system-store-debit-or-credit-row-to-all-related-logical-account --> system-allows-users-to-add-transaction-to-related-logical-accounts
-    system-cancel-balance-correction --> system-allows-users-to-add-transaction-to-related-logical-accounts
+    system-verify-user-code-is-valid --> user-choose-one-logical-account
 
-    system-verify-user-code-is-valid --> user-set-auto-debet-from-one-logical-account-to-another
-    user-set-auto-debet-from-one-logical-account-to-another --> system-determine-it's-time-for-auto-debet
-    system-determine-it's-time-for-auto-debet --> system-store-debit-row-to-source
-    system-determine-it's-time-for-auto-debet --> system-store-credit-row-to-destination
+    user-choose-one-logical-account --> user-add-credit-entry-to-logical-account
+
+    user-choose-one-logical-account --> user-add-debit-entry-to-logical-account
+    user-add-debit-entry-to-logical-account --> system-show-all-real-account-for-backing-the-entry
+    user-add-credit-entry-to-logical-account --> system-show-all-real-account-for-backing-the-entry
+
+    system-show-all-real-account-for-backing-the-entry --> user-choose-one-real-account-for-backing-the-entry
+    user-choose-one-real-account-for-backing-the-entry --> system-sees-relation-account-NOT-exists
+    system-sees-relation-account-NOT-exists --> system-create-relation-account
+    user-choose-one-real-account-for-backing-the-entry --> system-sees-relation-account-exists
+
+    system-create-relation-account --> user-was-adding-credit-entry
+    system-sees-relation-account-exists --> user-was-adding-credit-entry
+
+    system-create-relation-account --> user-was-adding-debit-entry
+    system-sees-relation-account-exists --> user-was-adding-debit-entry
+
+    user-was-adding-credit-entry --> system-add-credit-entry-with-current-balance-to-real-account
+    user-was-adding-credit-entry --> system-add-credit-entry-with-current-balance-to-logical-account
+    user-was-adding-credit-entry --> system-add-credit-entry-with-current-balance-to-relation-account
+
+    user-was-adding-debit-entry --> system-sees-relation-account-current-balance-IS-NOT-sufficient
+    user-was-adding-debit-entry --> system-sees-relation-account-current-balance-IS-sufficient
+    system-sees-relation-account-current-balance-IS-NOT-sufficient --> system-sees-real-account-current-balance-IS-sufficient
+    system-sees-relation-account-current-balance-IS-NOT-sufficient --> system-sees-real-account-current-balance-IS-NOT-sufficient
+    system-sees-real-account-current-balance-IS-sufficient --> system-add-credit-entry-with-current-balance-to-relation-account-as-much-as-the-remainder
+    system-sees-real-account-current-balance-IS-sufficient --> system-add-credit-entry-with-current-balance-to-logical-account-as-much-as-the-remainder
+    system-sees-real-account-current-balance-IS-NOT-sufficient --> system-rejects-the-debit-entry
+
+    system-sees-relation-account-current-balance-IS-sufficient --> system-add-debit-entry-with-current-balance-to-real-account
+    system-sees-relation-account-current-balance-IS-sufficient --> system-add-debit-entry-with-current-balance-to-relation-account
+    system-sees-relation-account-current-balance-IS-sufficient --> system-add-debit-entry-with-current-balance-to-logical-account
+    system-add-credit-entry-with-current-balance-to-logical-account-as-much-as-the-remainder --> system-add-debit-entry-with-current-balance-to-real-account
+    system-add-credit-entry-with-current-balance-to-logical-account-as-much-as-the-remainder --> system-add-debit-entry-with-current-balance-to-relation-account
+    system-add-credit-entry-with-current-balance-to-logical-account-as-much-as-the-remainder --> system-add-debit-entry-with-current-balance-to-logical-account
+    system-add-credit-entry-with-current-balance-to-relation-account-as-much-as-the-remainder --> system-add-debit-entry-with-current-balance-to-real-account
+    system-add-credit-entry-with-current-balance-to-relation-account-as-much-as-the-remainder --> system-add-debit-entry-with-current-balance-to-relation-account
+    system-add-credit-entry-with-current-balance-to-relation-account-as-much-as-the-remainder --> system-add-debit-entry-with-current-balance-to-logical-account
+
+    user-choose-one-logical-account --> user-choose-one-other-logical-account-to-move-balance
+    user-choose-one-other-logical-account-to-move-balance --> system-show-all-relation-account-of-source-logical-account
+    system-show-all-relation-account-of-source-logical-account --> user-choose-one-relation-account-of-source-logical-account
+    user-choose-one-relation-account-of-source-logical-account --> system-show-all-relation-account-of-destination-logical-account
+    system-show-all-relation-account-of-destination-logical-account --> user-choose-one-relation-account-of-destination-logical-account
+    user-choose-one-relation-account-of-destination-logical-account --> system-sees-relation-account-of-source-and-destination-logical-account-IS-backed-by-the-same-real-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-backed-by-the-same-real-account --> system-add-debit-entry-with-current-balance-to-source-relation-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-backed-by-the-same-real-account --> system-add-debit-entry-with-current-balance-to-source-logical-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-backed-by-the-same-real-account --> system-add-credit-entry-with-current-balance-to-destination-relation-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-backed-by-the-same-real-account --> system-add-credit-entry-with-current-balance-to-destination-logical-account
+    user-choose-one-relation-account-of-destination-logical-account --> system-sees-relation-account-of-source-and-destination-logical-account-IS-NOT-backed-by-the-same-real-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-NOT-backed-by-the-same-real-account --> system-add-debit-entry-with-current-balance-to-source-real-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-NOT-backed-by-the-same-real-account --> system-add-debit-entry-with-current-balance-to-source-relation-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-NOT-backed-by-the-same-real-account --> system-add-debit-entry-with-current-balance-to-source-logical-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-NOT-backed-by-the-same-real-account --> system-add-credit-entry-with-current-balance-to-destination-real-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-NOT-backed-by-the-same-real-account --> system-add-credit-entry-with-current-balance-to-destination-relation-account
+    system-sees-relation-account-of-source-and-destination-logical-account-IS-NOT-backed-by-the-same-real-account --> system-add-credit-entry-with-current-balance-to-destination-logical-account
