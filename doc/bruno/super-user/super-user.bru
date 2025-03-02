@@ -1,0 +1,23 @@
+meta {
+  name: super-user
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host}}/super-user
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "passwordHashHex": "e7fe6d7b01be2ff947b49cd315beb807b7d6fda2ae1f9190dc0dbcc7becfa53c"
+  }
+}
+
+tests {
+  test("expect 201 Created", function () {
+    expect(res.getStatus()).eql(201);
+  });
+}

@@ -1,0 +1,29 @@
+meta {
+  name: all
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host}}/real-account
+  body: none
+  auth: none
+}
+
+tests {
+  const resBody = res.getBody();
+  test("expect 200 OK", function () {
+    expect(res.getStatus()).eql(200);
+  });
+  
+  test("expect real account", function () {
+    expect(resBody).to.have.property("realAccounts");
+    resBody.realAccounts.forEach(realAccount => {
+      expect(realAccount).to.have.property("id")
+        .to.be.a("number");
+      expect(realAccount).to.have.property("name")
+        .to.be.a("string");
+    });
+  });
+  
+}

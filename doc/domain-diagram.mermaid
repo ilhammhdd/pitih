@@ -1,51 +1,65 @@
-%% v2.0.0
+%% v2.2.0
 graph
+    operator-runs-server --> system-run-process-that-periodically-cleanup-deleted-account
+    operator-runs-server --> system-run-process-that-periodically-cleanup-expired-OTP
+
     operator-runs-server --> system-verified-super-user-IS-NOT-exists
     system-verified-super-user-IS-NOT-exists --> operator-input-argon2i-hashed-super-user-password
     operator-input-argon2i-hashed-super-user-password --> system-create-super-user
+    system-create-super-user --> system-check-deleted-account-cleanup-time
 
     operator-runs-server --> system-verified-super-user-IS-exists
     system-verified-super-user-IS-exists --> system-check-deleted-account-cleanup-time
     system-check-deleted-account-cleanup-time --> system-permenently-delete-account-scheduled-to-cleanup-at-current-time
 
-    system-create-super-user --> system-check-deleted-account-cleanup-time
-
-    operator-runs-server --> system-set-scheduler-to-cleanup-deleted-account-everyday
-
     super-user-input-password --> system-verify-super-user-credential-is-valid
     system-verify-super-user-credential-is-valid --> super-user-view-all-user
-    system-verify-super-user-credential-is-valid --> super-user-create-user-code
-    system-verify-super-user-credential-is-valid --> super-user-delete-user-code
-    super-user-create-user-code --> system-store-user-code
-    super-user-delete-user-code --> system-remove-user-code
+    system-verify-super-user-credential-is-valid --> super-user-delete-user
+    system-verify-super-user-credential-is-valid --> super-user-create-user-by-email
+    super-user-create-user-by-email --> system-store-user-email
+    super-user-delete-user --> system-remove-user
 
-    user-input-user-code --> system-verify-user-code-is-valid
+    system-verify-super-user-credential-is-valid --> system-verified-OTP-mail-config-IS-NOT-set
+    system-verified-OTP-mail-config-IS-NOT-set --> super-user-input-required-OTP-mail-config
+    super-user-input-required-OTP-mail-config --> system-set-OTP-mail-config
 
-    system-verify-user-code-is-valid --> user-view-all-real-account
-    system-verify-user-code-is-valid --> user-view-all-logical-account
+    system-verify-super-user-credential-is-valid --> super-user-edit-OTP-mail-config
+    super-user-edit-OTP-mail-config --> system-set-OTP-mail-config
 
-    system-verify-user-code-is-valid --> user-create-real-account-with-init-balance
+    user-input-email --> system-generate-and-store-OTP-with-TTL
+    system-generate-and-store-OTP-with-TTL --> system-send-OTP-to-user-email
+    system-send-OTP-to-user-email --> user-input-OTP
+    user-input-OTP --> system-verifies-user-OTP-IS-valid
+
+    system-verifies-user-OTP-IS-valid --> user-view-all-real-account
+    system-verifies-user-OTP-IS-valid --> user-view-all-logical-account
+
+    system-verifies-user-OTP-IS-valid --> user-create-real-account-with-init-balance
     user-create-real-account-with-init-balance --> system-create-real-account
     system-create-real-account --> system-add-credit-entry-with-current-balance-to-real-account
 
-    system-verify-user-code-is-valid --> user-choose-one-real-account
+    system-verifies-user-OTP-IS-valid --> user-choose-one-real-account
     user-choose-one-real-account --> user-delete-real-account
-    user-delete-real-account --> system-sees-all-relation-account-current-balance-IS-zero
-    user-delete-real-account --> system-sees-all-relation-account-current-balance-IS-NOT-zero
-    system-sees-all-relation-account-current-balance-IS-NOT-zero --> system-reject-real-account-deletion
-    system-sees-all-relation-account-current-balance-IS-zero --> user-type-real-account-name
+    user-delete-real-account --> system-sees-ALL-relation-account-current-balance-IS-zero
+    user-delete-real-account --> system-sees-ANY-relation-account-current-balance-IS-NOT-zero
+    system-sees-ANY-relation-account-current-balance-IS-NOT-zero --> system-rejects-real-account-deletion
+    system-sees-ALL-relation-account-current-balance-IS-zero --> user-type-real-account-name
     user-type-real-account-name --> user-confirm-deletion
     user-confirm-deletion --> user-reconfirm-deletion
-    user-reconfirm-deletion --> system-soft-delete-real-account
-    user-reconfirm-deletion --> system-soft-delete-relation-account
+    user-reconfirm-deletion --> system-sees-real-account-name-confirmation-and-reconfirmation-IS-valid
+    user-reconfirm-deletion --> system-sees-real-account-name-confirmation-and-reconfirmation-IS-NOT-valid
+    system-sees-real-account-name-confirmation-and-reconfirmation-IS-NOT-valid --> system-rejects-real-account-deletion
+    system-sees-real-account-name-confirmation-and-reconfirmation-IS-valid --> system-soft-delete-real-account
+    system-sees-real-account-name-confirmation-and-reconfirmation-IS-valid --> system-soft-delete-relation-account
     system-soft-delete-real-account --> system-set-cleanup-time-one-month-after-deletion
 
-    system-verify-user-code-is-valid --> user-create-logical-account-with-init-balance
+    system-verifies-user-OTP-IS-valid --> user-create-logical-account-with-init-balance
     user-create-logical-account-with-init-balance --> system-create-logical-account
-    system-create-logical-account --> user-input-init-balance-more-than-zero
-    user-input-init-balance-more-than-zero --> system-show-all-real-account-for-backing-the-entry
+    system-create-logical-account --> user-WAS-NOT-inputting-init-balance-more-than-zero
+    system-create-logical-account --> user-WAS-inputting-init-balance-more-than-zero
+    user-WAS-inputting-init-balance-more-than-zero --> system-show-all-real-account-for-backing-the-entry
 
-    system-verify-user-code-is-valid --> user-choose-one-logical-account
+    system-verifies-user-OTP-IS-valid --> user-choose-one-logical-account
 
     user-choose-one-logical-account --> user-add-credit-entry-to-logical-account
 

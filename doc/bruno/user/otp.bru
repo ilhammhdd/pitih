@@ -1,0 +1,35 @@
+meta {
+  name: otp
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host}}/user/otp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "nonceHex": "3931333538",
+    "otp": "981274"
+  }
+}
+
+script:post-response {
+  const resBody = res.getBody();
+  bru.setEnvVar("user-bearer-token", resBody.bearerToken);
+}
+
+tests {
+  test("expect 200 OK", function () {
+    expect(res.getStatus()).eql(200);
+  });
+  
+  test("expect bearer token", function () {
+    expect(res.getBody())
+      .to.have.property("bearerToken")
+      .to.be.a("string")
+  });
+}
