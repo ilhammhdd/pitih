@@ -1,24 +1,24 @@
 meta {
-  name: login
+  name: user-login
   type: http
   seq: 2
 }
 
 post {
-  url: {{host}}/super-user/login
+  url: {{host}}/user/login
   body: json
   auth: none
 }
 
 body:json {
   {
-    "password": "somepassword"
+    "email": "user@example.com"
   }
 }
 
 script:post-response {
   const resBody = res.getBody();
-  bru.setEnvVar("supre-user-bearer-token", resBody.bearerToken);
+  bru.setEnvVar("nonce-hex", resBody.nonceHex)
 }
 
 tests {
@@ -26,9 +26,9 @@ tests {
     expect(res.getStatus()).eql(200);
   });
   
-  test("expect bearer token", function () {
+  test("expect nonce", function () {
     expect(res.getBody())
-      .to.have.property("bearerToken")
-      .to.be.a("string")
+      .to.have.property("nonceHex")
+      .to.be.a("string");
   });
 }

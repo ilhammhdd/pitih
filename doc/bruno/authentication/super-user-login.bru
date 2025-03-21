@@ -1,25 +1,24 @@
 meta {
-  name: otp
+  name: super-user-login
   type: http
-  seq: 2
+  seq: 1
 }
 
 post {
-  url: {{host}}/user/otp
+  url: {{host}}/super-user/login
   body: json
   auth: none
 }
 
 body:json {
   {
-    "nonceHex": "3931333538",
-    "otp": "981274"
+    "password": "somepassword"
   }
 }
 
 script:post-response {
   const resBody = res.getBody();
-  bru.setEnvVar("user-bearer-token", resBody.bearerToken);
+  bru.setEnvVar("supre-user-bearer-token", resBody.bearerToken);
 }
 
 tests {

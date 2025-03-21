@@ -1,17 +1,13 @@
 meta {
   name: otp-mail-config
   type: http
-  seq: 3
+  seq: 1
 }
 
 put {
   url: {{host}}/otp-mail
   body: json
   auth: none
-}
-
-headers {
-  Authorization: Bearer {{super-user-bearer-token}}
 }
 
 body:json {

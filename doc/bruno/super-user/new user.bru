@@ -1,0 +1,23 @@
+meta {
+  name: new user
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{host}}/user
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "user@example.com"
+  }
+}
+
+tests {
+  test("expect 201 Created", function () {
+    expect(res.getStatus()).eql(200);
+  });
+}

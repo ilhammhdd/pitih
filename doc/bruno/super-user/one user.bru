@@ -1,0 +1,21 @@
+meta {
+  name: one user
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{host}}/user/:email
+  body: none
+  auth: none
+}
+
+params:path {
+  email: 
+}
+
+tests {
+  test("expect 200 OK", function () {
+    expect(res.getStatus()).eql(200);
+  });
+}

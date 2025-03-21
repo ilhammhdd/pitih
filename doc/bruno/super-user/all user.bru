@@ -1,0 +1,43 @@
+meta {
+  name: all user
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host}}/user?perPage=10&page=1
+  body: none
+  auth: none
+}
+
+params:query {
+  perPage: 10
+  page: 1
+  ~email: example@mail.com
+}
+
+tests {
+  test("expect 200 OK", function () {
+    expect(res.getStatus()).eql(200);
+  });
+  
+  test("expect response body", function () {
+    const respBody = res.getBody();
+    expect(respBody).to.have.property("page")
+      .to.be.a("number");
+    expect(respBody).to.have.property("perPage")
+      .to.be.a("number");
+    expect(respBody).to.have.property("total")
+      .to.be.a("number");
+    expect(respBody).to.have.property("entities")
+      .to.be.an("array");
+    if (respBody.entities.length > 0) {
+      respBody.entities.forEach(entity => {
+        expect(entity).to.have.property("email")
+          .to.be.a("string");
+        expect(entity).to.have.property("joined")
+          .to.be.a("string");
+      })
+    }
+  });
+}

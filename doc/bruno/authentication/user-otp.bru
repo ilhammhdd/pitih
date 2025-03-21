@@ -1,24 +1,25 @@
 meta {
-  name: login
+  name: user-otp
   type: http
-  seq: 1
+  seq: 3
 }
 
 post {
-  url: {{host}}/user/login
+  url: {{host}}/user/otp
   body: json
   auth: none
 }
 
 body:json {
   {
-    "email": "user@example.com"
+    "nonceHex": "3931333538",
+    "otp": "981274"
   }
 }
 
 script:post-response {
   const resBody = res.getBody();
-  bru.setEnvVar("nonce-hex", resBody.nonceHex)
+  bru.setEnvVar("user-bearer-token", resBody.bearerToken);
 }
 
 tests {
@@ -26,9 +27,9 @@ tests {
     expect(res.getStatus()).eql(200);
   });
   
-  test("expect nonce", function () {
+  test("expect bearer token", function () {
     expect(res.getBody())
-      .to.have.property("nonceHex")
-      .to.be.a("string");
+      .to.have.property("bearerToken")
+      .to.be.a("string")
   });
 }
