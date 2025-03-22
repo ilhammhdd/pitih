@@ -1,0 +1,57 @@
+%% v1.0.0
+erDiagram
+    SUPER-USER {
+        string password-hash
+        string password-salt
+        uint32 password-time
+        uint32 password-threads
+        uint32 password-key-len
+    }
+
+    USER {
+        byte(16) id
+        string name
+        string email
+    }
+
+    OTP {
+        byte(16) id
+        string nonceHex
+        string otp
+    }
+
+    OTP-MAIL-CONFIG {
+        string host
+        string username
+        string password
+        string senderEmail
+    }
+
+    USER-SESSION {
+        byte(16) id
+        string token
+        datetime issuedAt
+        datetime expiredAt
+    }
+
+    REAL-ACCOUNT {
+        byte(16) id
+        string name
+    }
+
+    LOGICAL-ACCOUNT {
+        byte(16) id
+        string name
+    }
+
+    RECORD {
+        byte(16) id
+        string desc
+        int64 amount
+        int64 currentBalance
+    }
+
+    USER ||--o{ OTP : ""
+    OTP ||--|| USER-SESSION : ""
+    REAL-ACCOUNT |o--o{ RECORD : ""
+    LOGICAL-ACCOUNT |o--o{ RECORD : ""

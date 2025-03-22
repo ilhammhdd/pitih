@@ -1,4 +1,4 @@
-%% v2.2.0
+%% v2.3.0
 graph
     operator-runs-server --> system-run-process-that-periodically-cleanup-deleted-account
     operator-runs-server --> system-run-process-that-periodically-cleanup-expired-OTP
@@ -52,6 +52,12 @@ graph
     system-sees-real-account-name-confirmation-and-reconfirmation-IS-valid --> system-soft-delete-real-account
     system-sees-real-account-name-confirmation-and-reconfirmation-IS-valid --> system-soft-delete-relation-account
     system-soft-delete-real-account --> system-set-cleanup-time-one-month-after-deletion
+
+    user-choose-one-real-account --> user-add-credit-entry-to-real-account
+    user-add-credit-entry-to-real-account --> system-add-credit-entry-with-current-balance-to-real-account
+    user-choose-one-real-account --> user-add-debit-entry-to-real-account
+    user-add-debit-entry-to-real-account --> system-verifies-real-account-current-balance-will-not-goes-less-than-zero-after-debit
+    system-verifies-real-account-current-balance-will-not-goes-less-than-zero-after-debit --> system-add-debit-entry-with-current-balance-to-real-account
 
     system-verifies-user-OTP-IS-valid --> user-create-logical-account-with-init-balance
     user-create-logical-account-with-init-balance --> system-create-logical-account
