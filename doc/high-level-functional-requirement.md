@@ -1,0 +1,17 @@
+- real account holds actual balance
+- logical account doesn't actually holds balance
+- relation account connects logical and real account
+- real account and relation account balance IS NOT allowed to be negative
+- CAN manually add entry to real account
+- CAN manually add entry to logical account
+- CANNOT manually add entry to relation account
+- entry in logical account MUST be backed by relation account
+  -  when choosing relation account, the user is actually using real account, and if a relation account already exists between logical account and chosen real account then that relation account will be used, otherwise a new relation account will be created
+- positive entry in logical account MUST be reflected as is to relation and real account
+- negative entry in logical account MUST use balance from relation account
+  - if current balance in relation and real account isn't sufficient then adding negative entry in logical account is rejected, user must choose other relation account, in turn will choose other real account
+  - if current balance in relation account isn't sufficient then MUST add positive entry from real account to relation account as much as the remainder first. Negative entry of total is added to logical account, positive entry of remainder and negative entry of total is added to relation account, negative entry of remainder is added to real account
+  - if current balance in relation account is sufficient then negative entry is added to logical and relation account
+- allocate balance from real account for later use by logical account by holding it on relation account, negative entry on real account, positive entry on relation account
+- move balance from one logical account to another, negative entry is added to source logical and relation account, positive entry is added to destination logical and relation account
+  - if real account backing the relation account of source and destination is different, then negative entry is added to source real account and positive entry is added to destination real account

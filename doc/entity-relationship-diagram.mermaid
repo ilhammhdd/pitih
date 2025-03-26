@@ -1,11 +1,15 @@
-%% v1.0.0
+%% v2.0.0
 erDiagram
+    CONFIG {
+        uint32 cleanUpAccountSeconds
+    }
+
     SUPER-USER {
-        string password-hash
-        string password-salt
-        uint32 password-time
-        uint32 password-threads
-        uint32 password-key-len
+        string passwordHash
+        string passwordSalt
+        uint32 passwordTime
+        uint32 passwordThreads
+        uint32 passwordKeyLen
     }
 
     USER {
@@ -37,21 +41,50 @@ erDiagram
     REAL-ACCOUNT {
         byte(16) id
         string name
+        datetime deletedAt
     }
 
     LOGICAL-ACCOUNT {
         byte(16) id
         string name
+        datetime deletedAt
     }
 
-    RECORD {
+    RELATION-ACCOUNT {
         byte(16) id
-        string desc
+        string name
+        datetime deletedAt
+    }
+
+    LOGICAL-ENTRY {
+        byte(16) id
+    }
+
+    RELATION-ENTRY {
+        byte(16) id
+        datetime datetime
+        string description
+        int64 amount
+        int64 currentBalance
+    }
+
+    REAL-ENTRY {
+        byte(16) id
+        datetime datetime
+        string description
         int64 amount
         int64 currentBalance
     }
 
     USER ||--o{ OTP : ""
-    OTP ||--|| USER-SESSION : ""
-    REAL-ACCOUNT |o--o{ RECORD : ""
-    LOGICAL-ACCOUNT |o--o{ RECORD : ""
+    OTP ||--o| USER-SESSION : ""
+
+    LOGICAL-ACCOUNT ||--o{ RELATION-ACCOUNT: ""
+    RELATION-ACCOUNT }o--|| REAL-ACCOUNT: ""
+
+    REAL-ACCOUNT ||--o{ REAL-ENTRY : ""
+    RELATION-ACCOUNT ||--o{ RELATION-ENTRY : ""
+    LOGICAL-ACCOUNT ||--o{ LOGICAL-ENTRY : ""
+
+    LOGICAL-ENTRY |o--|| RELATION-ENTRY : ""
+    RELATION-ENTRY |o--|| REAL-ENTRY : ""
