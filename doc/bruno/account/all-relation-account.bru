@@ -1,11 +1,11 @@
 meta {
-  name: all user
+  name: all-relation-account
   type: http
-  seq: 2
+  seq: 3
 }
 
 get {
-  url: {{host}}/user?perPage=10&page=1
+  url: {{host}}/relation-account?perPage=10&page=1&logicalAccountName=bahan&realAccountName=pay
   body: none
   auth: none
 }
@@ -13,7 +13,10 @@ get {
 params:query {
   perPage: 10
   page: 1
-  ~email: example@mail.com
+  logicalAccountName: bahan
+  realAccountName: pay
+  ~logicalAccountId: 0bc6599a-8abb-4b20-bcff-87eb4e482e71
+  ~realAccountId: 271f4c5b-0a1e-47a0-8262-c2c1d84b8f6c
 }
 
 tests {
@@ -21,7 +24,7 @@ tests {
     expect(res.getStatus()).eql(200);
   });
   
-  test("expect response body", function() {
+  test("expect paginated all relation account", function() {
     const respBody = res.getBody();
     expect(respBody).to.have.property("page")
       .to.be.a("number");
@@ -35,11 +38,20 @@ tests {
       respBody.entities.forEach(entity => {
         expect(entity).to.have.property("id")
           .to.be.a("string");
-        expect(entity).to.have.property("email")
+        expect(entity).to.have.property("name")
           .to.be.a("string");
-        expect(entity).to.have.property("joined")
+        expect(entity).to.have.property("currentBalance")
+          .to.be.a("number");
+        expect(entity).to.have.property("createdBy")
           .to.be.a("string");
       })
     }
   });
+  
+}
+
+docs {
+  ### Query param priority
+  1. `logicalAccountId` and `realAccountId`, this will find exact match
+  1. `logicalAccountName` and `realAccountName`, this will find contains match
 }

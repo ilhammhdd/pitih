@@ -22,11 +22,11 @@ script:post-response {
 }
 
 tests {
-  test("expect 200 OK", function () {
+  test("expect 200 OK", function() {
     expect(res.getStatus()).eql(200);
   });
   
-  test("expect nonce", function () {
+  test("expect nonce", function() {
     expect(res.getBody())
       .to.have.property("nonceHex")
       .to.be.a("string");

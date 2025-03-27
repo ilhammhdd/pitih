@@ -1,11 +1,11 @@
 meta {
-  name: all user
+  name: all-real-account
   type: http
-  seq: 2
+  seq: 1
 }
 
 get {
-  url: {{host}}/user?perPage=10&page=1
+  url: {{host}}/real-account?perPage=10&page=1
   body: none
   auth: none
 }
@@ -13,7 +13,7 @@ get {
 params:query {
   perPage: 10
   page: 1
-  ~email: example@mail.com
+  ~name: pay
 }
 
 tests {
@@ -21,7 +21,7 @@ tests {
     expect(res.getStatus()).eql(200);
   });
   
-  test("expect response body", function() {
+  test("expect paginated all real account", function() {
     const respBody = res.getBody();
     expect(respBody).to.have.property("page")
       .to.be.a("number");
@@ -35,11 +35,14 @@ tests {
       respBody.entities.forEach(entity => {
         expect(entity).to.have.property("id")
           .to.be.a("string");
-        expect(entity).to.have.property("email")
+        expect(entity).to.have.property("name")
           .to.be.a("string");
-        expect(entity).to.have.property("joined")
+        expect(entity).to.have.property("currentBalance")
+          .to.be.a("number");
+        expect(entity).to.have.property("createdBy")
           .to.be.a("string");
       })
     }
   });
+  
 }

@@ -22,11 +22,11 @@ script:post-response {
 }
 
 tests {
-  test("expect 200 OK", function () {
+  test("expect 200 OK", function() {
     expect(res.getStatus()).eql(200);
   });
   
-  test("expect bearer token", function () {
+  test("expect bearer token", function() {
     expect(res.getBody())
       .to.have.property("bearerToken")
       .to.be.a("string")

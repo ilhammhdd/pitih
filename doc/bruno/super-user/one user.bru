@@ -5,17 +5,17 @@ meta {
 }
 
 delete {
-  url: {{host}}/user/:email
+  url: {{host}}/user/:id
   body: none
   auth: none
 }
 
 params:path {
-  email: 
+  id: 
 }
 
 tests {
-  test("expect 200 OK", function () {
+  test("expect 200 OK", function() {
     expect(res.getStatus()).eql(200);
   });
 }

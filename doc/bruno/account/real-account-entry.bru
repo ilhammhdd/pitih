@@ -1,0 +1,66 @@
+meta {
+  name: real-account-entry
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host}}/real-account/:id/entry?perPage=10&page=1
+  body: none
+  auth: none
+}
+
+params:query {
+  perPage: 10
+  page: 1
+  ~from: 2025-03-18T22:55:52Z
+  ~to: 2025-03-26T22:55:52Z
+}
+
+params:path {
+  id: 
+}
+
+tests {
+  test("expect 200 OK", function() {
+    expect(res.getStatus()).eql(200);
+  });
+  
+  test("expect paginated real account entry", function() {
+    const respBody = res.getBody();
+    expect(respBody).to.have.property("page")
+      .to.be.a("number");
+    expect(respBody).to.have.property("perPage")
+      .to.be.a("number");
+    expect(respBody).to.have.property("total")
+      .to.be.a("number");
+    expect(respBody).to.have.property("entities")
+      .to.be.an("array");
+    if (respBody.entities.length > 0) {
+      expect(respBody).to.have.property("id")
+        .to.be.a("string");
+      expect(respBody).to.have.property("dateTime")
+        .to.be.a("string");
+      expect(respBody).to.have.property("description")
+        .to.be.a("string");
+      expect(respBody).to.have.property("amount")
+        .to.be.a("number");
+      expect(respBody).to.have.property("currentBalance")
+        .to.be.a("number"); 
+    }
+  })
+  
+}
+
+docs {
+  ### Order
+  Given that 1 account could potentially have many entries, the order is from the latest entry, so with param `perPage=10&page=1` the API is expected to return latest 10 entries
+  
+  ### Pagination type
+  - Page-based pagination with query param `perPage` and `page`
+  - Time-based pagination with query param `from` and `to`, both are expected to be valid RFC3999 formatted date time
+  
+  The default pagination type is page-based pagination, if both `from` and `to` query is provided then time-based pagination will be used, regardless `perPage` and `page` is provided or not.
+  
+  If there are no query param provided or page-based and time-based query param isn't valid, e.g. `page=2&start=2025-03-18T22:55:52Z`, then the default will be `perPage=10&page=1`
+}

@@ -15,9 +15,12 @@ func main() {
 		Entities []T `json:"entities"`
 	}
 	type User struct {
+		ID     string    `json:"id"`
 		Email  string    `json:"email"`
 		Joined time.Time `json:"joined"`
 	}
+
+	log.Println(time.Now().UTC().Format(time.RFC3339))
 
 	err := http.ListenAndServe(":8087", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.Header.Get("Authorization"))
@@ -26,7 +29,7 @@ func main() {
 			PerPage: 10,
 			Total:   3,
 			Entities: []User{
-				{Email: "user@example.com", Joined: time.Now()},
+				{ID: "hasdb12no", Email: "user@example.com", Joined: time.Now()},
 			},
 			// Entities: []User{},
 		}
