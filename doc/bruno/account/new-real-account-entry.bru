@@ -1,0 +1,35 @@
+meta {
+  name: new-real-account-entry
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{host}}/real-account/:id/entry
+  body: json
+  auth: none
+}
+
+params:path {
+  id: 271f4c5b-0a1e-47a0-8262-c2c1d84b8f6c
+}
+
+body:json {
+  {
+    "description": "buy speaker",
+    "amount": -200000
+  }
+}
+
+tests {
+  expect("expect 201 Created", function() {
+    expect(res.getStatus()).eql(201);
+  });
+}
+
+docs {
+  ### Amount
+  this API is used for adding positive or negative entry
+  
+  constraint: `amount < 0 && amount > 0`
+}

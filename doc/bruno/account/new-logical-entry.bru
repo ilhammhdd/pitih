@@ -1,0 +1,36 @@
+meta {
+  name: new-logical-entry
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{host}}/logical-account/:logicalAccountId/entry
+  body: json
+  auth: none
+}
+
+params:path {
+  logicalAccountId: 3e36d87e-b423-4285-947a-23fcdf1c884d
+}
+
+body:json {
+  {
+    "description": "buy fish",
+    "amount": -100000,
+    "sourceRealAccountId": "4e7d68fe-ab6a-40c9-8025-cc4bad66b11c"
+  }
+}
+
+tests {
+  expect("expect 201 Created", function() {
+    expect(res.getStatus()).eql(201);
+  });
+}
+
+docs {
+  ### Amount
+  this API is used for adding positive or negative entry
+  
+  constraint: `amount < 0 && amount > 0`
+}

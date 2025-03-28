@@ -1,0 +1,36 @@
+meta {
+  name: logical-account-balance-allocation
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{host}}/logical-account/:logicalAccountId/allocation
+  body: json
+  auth: none
+}
+
+params:path {
+  logicalAccountId: 4f25c113-1c70-4083-92cf-6d7448fa12ab
+}
+
+body:json {
+  {
+    "description": "one week food and beverages",
+    "amount": 300000,
+    "destinationLogicalAccountId": "aa51079f-e3e4-4194-b96d-7840efc9f96a"
+  }
+}
+
+tests {
+  expect("expect 201 Created", function() {
+    expect(res.getStatus()).eql(201);
+  });
+}
+
+docs {
+  ### Usage
+  this API is used to move balance from source logical account identified by `logicalAccountId` path param to destination logical account identified by `destinationLogicalAccountId` body property
+  
+  constraint: `amount > 0`
+}
