@@ -41,18 +41,21 @@ erDiagram
     REAL-ACCOUNT {
         byte(16) id
         string name
+        byte(16) createdBy
         datetime deletedAt
     }
 
     LOGICAL-ACCOUNT {
         byte(16) id
         string name
+        byte(16) createdBy
         datetime deletedAt
     }
 
     RELATION-ACCOUNT {
         byte(16) id
         string name
+        byte(16) createdBy
         datetime deletedAt
     }
 
@@ -62,7 +65,7 @@ erDiagram
 
     RELATION-ENTRY {
         byte(16) id
-        datetime datetime
+        datetime dateTime
         string description
         int64 amount
         int64 currentBalance
@@ -70,21 +73,24 @@ erDiagram
 
     REAL-ENTRY {
         byte(16) id
-        datetime datetime
+        datetime dateTime
         string description
         int64 amount
         int64 currentBalance
     }
 
-    USER ||--o{ OTP : ""
-    OTP ||--o| USER-SESSION : ""
+    USER ||--o{ OTP: ""
+    OTP ||--o| USER-SESSION: ""
+    USER ||--o{ REAL-ACCOUNT: ""
+    USER ||--o{ RELATION-ACCOUNT: ""
+    USER ||--o{ LOGICAL-ACCOUNT: ""
 
     LOGICAL-ACCOUNT ||--o{ RELATION-ACCOUNT: ""
     RELATION-ACCOUNT }o--|| REAL-ACCOUNT: ""
 
-    REAL-ACCOUNT ||--o{ REAL-ENTRY : ""
-    RELATION-ACCOUNT ||--o{ RELATION-ENTRY : ""
-    LOGICAL-ACCOUNT ||--o{ LOGICAL-ENTRY : ""
+    REAL-ACCOUNT ||--o{ REAL-ENTRY: ""
+    RELATION-ACCOUNT ||--o{ RELATION-ENTRY: ""
+    LOGICAL-ACCOUNT ||--o{ LOGICAL-ENTRY: ""
 
-    LOGICAL-ENTRY |o--|| RELATION-ENTRY : ""
-    RELATION-ENTRY |o--|| REAL-ENTRY : ""
+    LOGICAL-ENTRY |o--|| RELATION-ENTRY: ""
+    RELATION-ENTRY |o--|| REAL-ENTRY: ""
