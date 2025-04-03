@@ -12,6 +12,10 @@
   - if current balance in relation and real account isn't sufficient then adding negative entry in logical account is rejected, user must choose other relation account, in turn will choose other real account
   - if current balance in relation account isn't sufficient then MUST add positive entry from real account to relation account as much as the remainder first. Negative entry of total is added to logical account, positive entry of remainder and negative entry of total is added to relation account, negative entry of remainder is added to real account
   - if current balance in relation account is sufficient then negative entry is added to logical and relation account
+- reverse entry is used to negate one selected entry along with all of its relations, if the selected entry amount is positive then a negative reverse entry will be added, else if the selected entry amount is negative then a positive reverse entry will be added, reverse entry MUST have reference to the original entry
+  - real, relation, and logical entry can have reverse entry
+  - all entries related to original entry MUST also be reversed
+  - CAN only do full reversal, CANNOT do pertial reversal
 - allocate balance from real account for later use by logical account by holding it on relation account, negative entry on real account, positive entry on relation account
 - move balance from one logical account to another, negative entry is added to source logical and relation account, positive entry is added to destination logical and relation account
   - if real account backing the relation account of source and destination is different, then negative entry is added to source real account and positive entry is added to destination real account

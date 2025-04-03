@@ -1,4 +1,4 @@
-%% v2.0.0
+%% v2.1.0
 erDiagram
     CONFIG {
         uint32 cleanUpAccountSeconds
@@ -20,6 +20,7 @@ erDiagram
 
     OTP {
         byte(16) id
+        byte(16) userId
         string nonceHex
         string otp
     }
@@ -33,6 +34,7 @@ erDiagram
 
     USER-SESSION {
         byte(16) id
+        byte(16) otpId
         string token
         datetime issuedAt
         datetime expiredAt
@@ -40,31 +42,43 @@ erDiagram
 
     REAL-ACCOUNT {
         byte(16) id
+        byte(16) createdByUserId
         string name
-        byte(16) createdBy
         datetime deletedAt
     }
 
     LOGICAL-ACCOUNT {
         byte(16) id
+        byte(16) createdByUserId
         string name
-        byte(16) createdBy
         datetime deletedAt
     }
 
     RELATION-ACCOUNT {
         byte(16) id
+        byte(16) createdByUserId
+        byte(16) realAccountId
+        byte(16) logicalAccountId
         string name
-        byte(16) createdBy
         datetime deletedAt
     }
 
     LOGICAL-ENTRY {
         byte(16) id
+        byte(16) logicalAccountId
+        byte(16) relationEntryId
+        byte(16) reversing
+        datetime dateTime
+        string description
+        int64 amount
+        int64 currentBalance
     }
 
     RELATION-ENTRY {
         byte(16) id
+        byte(16) relationAccountId
+        byte(16) realEntryId
+        byte(16) reversing
         datetime dateTime
         string description
         int64 amount
@@ -73,6 +87,8 @@ erDiagram
 
     REAL-ENTRY {
         byte(16) id
+        byte(16) realAccountId
+        byte(16) reversing
         datetime dateTime
         string description
         int64 amount
@@ -94,3 +110,7 @@ erDiagram
 
     LOGICAL-ENTRY |o--|| RELATION-ENTRY: ""
     RELATION-ENTRY |o--|| REAL-ENTRY: ""
+
+    REAL-ENTRY |o--|| REAL-ENTRY: "reversing"
+    LOGICAL-ENTRY |o--|| LOGICAL-ENTRY: "reversing"
+    RELATION-ENTRY |o--|| RELATION-ENTRY: "reversing"
