@@ -1,32 +1,49 @@
-%% v1.0.0
+%% v2.0.0
 architecture-beta
+    service client(internet)[Client]
+    service apiGateway(server)[API Gateway]
+
     group management[Management]
-    service user(server)[User] in management
-    service managementServer(server)[Server] in management
+    service userServer(server)[User Server] in management
+    service managementServer(server)[Management Server] in management
     service managementStorage(disk)[Storage] in management
 
     junction leftManagement in management
     junction centerManagement in management
-    junction rightManagement in management
 
-    user:B -- T:leftManagement
-    managementServer:B -- T:rightManagement
-    leftManagement:R -- L:rightManagement
+    userServer:B -- T:leftManagement
+    managementServer:B -- T:centerManagement
     centerManagement:L -- R:leftManagement
-    centerManagement:R -- L:rightManagement
     centerManagement:B -- T:managementStorage
 
     group account[Account]
     service accountServer(server)[Account Server] in account
-    service entryServer(server)[Entry Server] in account
+    service entryServerReplicated(server)[Entry Server _replicated_] in account
     service accountStorage(disk)[Storage] in account
 
     junction centerAccount in account
-    junction leftAccount in account
     junction rightAccount in account
 
-    accountServer:B -- T:leftAccount
-    entryServer:B -- T:rightAccount
-    leftAccount:R -- L:centerAccount
+    accountServer:B -- T:centerAccount
+    entryServerReplicated:B -- T:rightAccount
     rightAccount:L -- R:centerAccount
     accountStorage:T -- B:centerAccount
+
+    client:B -- T:apiGateway
+
+    junction userServerAPIGateway
+    junction managementServerAPIGateway
+    
+    userServerAPIGateway:B -- T:userServer
+    managementServerAPIGateway:B -- T:managementServer
+    userServerAPIGateway:R -- L:managementServerAPIGateway
+
+    junction accountServerAPIGateway
+    junction entryServerAPIGateway
+
+    accountServerAPIGateway:B -- T:accountServer
+    entryServerAPIGateway:B -- T:entryServerReplicated
+    accountServerAPIGateway:R -- L:entryServerAPIGateway
+
+    apiGateway:R -- L:userServerAPIGateway
+    apiGateway:L -- R:entryServerAPIGateway
